@@ -21,6 +21,8 @@ g.clear(true)
  .fillCircle(centerX, g.getHeight() - 30 - halfTunnel, tunnelWidth / 2)
  .fillRect(centerX - halfTunnel, centerY, centerX + halfTunnel, g.getHeight() - 30 - halfTunnel);
 
+Bangle.drawWidgets();
+
 let caves = Uint8Array([
    2,  8, 14,    //  0
    7, 13, 19,    //  1
