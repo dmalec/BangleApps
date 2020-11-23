@@ -1,28 +1,3 @@
-let centerX = g.getWidth() / 2;
-let centerY = g.getHeight() / 2;
-let caveRadius = Math.min(g.getWidth(), g.getHeight()) / 4;
-let caveWall = 4;
-let tunnelWidth = 38;
-let halfTunnel = tunnelWidth / 2;
-let innerTunnelWidth = tunnelWidth - caveWall * 2;
-let innerTunnelHalfWidth = innerTunnelWidth / 2;
-
-// Draw Cave
-g.clear(true)
- .setColor(0, 1, 0)
- .fillCircle(centerX, centerY, caveRadius)
- .fillRect(centerX, centerY - halfTunnel, g.getWidth(), centerY + halfTunnel)
-
- .fillRect(centerX, 30, g.getWidth(), 30 + tunnelWidth)
- .fillCircle(centerX, 30 + halfTunnel, halfTunnel)
- .fillRect(centerX - halfTunnel, 30 + halfTunnel, centerX + halfTunnel, centerY)
-
- .fillRect(centerX, g.getHeight() - 30 - tunnelWidth, g.getWidth(), g.getHeight() - 30)
- .fillCircle(centerX, g.getHeight() - 30 - halfTunnel, tunnelWidth / 2)
- .fillRect(centerX - halfTunnel, centerY, centerX + halfTunnel, g.getHeight() - 30 - halfTunnel);
-
-Bangle.drawWidgets();
-
 let caves = Uint8Array([
    2,  8, 14,    //  0
    7, 13, 19,    //  1
@@ -46,6 +21,35 @@ let caves = Uint8Array([
    1,  3,  9     // 19
 ]);
 
+let wumpusCave;
+let batCaves;
+let pitCaves;
+let playerCave;
+
+let centerX = g.getWidth() / 2;
+let centerY = g.getHeight() / 2;
+let caveRadius = Math.min(g.getWidth(), g.getHeight()) / 4;
+let caveWall = 4;
+let tunnelWidth = 38;
+let halfTunnel = tunnelWidth / 2;
+let innerTunnelWidth = tunnelWidth - caveWall * 2;
+let innerTunnelHalfWidth = innerTunnelWidth / 2;
+
+function drawCaveOutline() {
+  g.clear(true)
+   .setColor(0, 1, 0)
+   .fillCircle(centerX, centerY, caveRadius)
+   .fillRect(centerX, centerY - halfTunnel, g.getWidth(), centerY + halfTunnel)
+
+   .fillRect(centerX, 30, g.getWidth(), 30 + tunnelWidth)
+   .fillCircle(centerX, 30 + halfTunnel, halfTunnel)
+   .fillRect(centerX - halfTunnel, 30 + halfTunnel, centerX + halfTunnel, centerY)
+
+   .fillRect(centerX, g.getHeight() - 30 - tunnelWidth, g.getWidth(), g.getHeight() - 30)
+   .fillCircle(centerX, g.getHeight() - 30 - halfTunnel, tunnelWidth / 2)
+   .fillRect(centerX - halfTunnel, centerY, centerX + halfTunnel, g.getHeight() - 30 - halfTunnel);
+}
+
 function drawCave() {
   // Clear cave internals
   g.setColor(0, 0, 0)
@@ -58,7 +62,9 @@ function drawCave() {
 
    .fillRect(centerX, g.getHeight() - 30 - caveWall - innerTunnelWidth, g.getWidth(), g.getHeight() - 30 - caveWall)
    .fillCircle(centerX, g.getHeight() - 30 - caveWall - innerTunnelHalfWidth, innerTunnelHalfWidth)
-   .fillRect(centerX - innerTunnelHalfWidth, centerY, centerX + innerTunnelHalfWidth, g.getHeight() - 30 - caveWall - innerTunnelHalfWidth);
+   .fillRect(centerX - innerTunnelHalfWidth, centerY, centerX + innerTunnelHalfWidth, g.getHeight() - 30 - caveWall - innerTunnelHalfWidth)
+
+   .fillRect(0, 30, 40, g.getHeight() - 30);
 
   // Draw Cave Number
   g.setColor(0, 1, 0)
@@ -80,7 +86,68 @@ function drawCave() {
   g.setFont("Vector", 32)
   .setFontAlign(1, 1)
   .drawString(caves[playerCave * 3 + 2] + 1, g.getWidth() - 4, g.getHeight() - 30);
+
+  // Draw hazards
+  if (wumpusCave == caves[playerCave * 3] ||
+      wumpusCave == caves[playerCave * 3 + 1] ||
+      wumpusCave == caves[playerCave * 3 + 2]) {
+    g.setFont("Vector", 48)
+     .setFontAlign(-1, -1)
+     .drawString("W", 5, 30);
+  }
+
+  if (batCaves[0] == caves[playerCave * 3] ||
+      batCaves[0] == caves[playerCave * 3 + 1] ||
+      batCaves[0] == caves[playerCave * 3 + 2] ||
+      batCaves[1] == caves[playerCave * 3] ||
+      batCaves[1] == caves[playerCave * 3 + 1] ||
+      batCaves[1] == caves[playerCave * 3 + 2]) {
+    g.setFont("Vector", 48)
+     .setFontAlign(-1, -1)
+     .drawString("B", 5, 80);
+  }
+
+  if (pitCaves[0] == caves[playerCave * 3] ||
+      pitCaves[0] == caves[playerCave * 3 + 1] ||
+      pitCaves[0] == caves[playerCave * 3 + 2] ||
+      pitCaves[1] == caves[playerCave * 3] ||
+      pitCaves[1] == caves[playerCave * 3 + 1] ||
+      pitCaves[1] == caves[playerCave * 3 + 2]) {
+    g.setFont("Vector", 48)
+     .setFontAlign(-1, -1)
+     .drawString("P", 5, 130);
+  }
 }
+
+function startGame() {
+  wumpusCave = Math.floor(Math.random() * Math.floor(20));
+  console.log("W: " + wumpusCave);
+  batCaves = Uint8Array([
+    Math.random() * Math.floor(20),
+    Math.random() * Math.floor(20)
+  ]);
+  console.log("B: " + batCaves[0] + " " + batCaves[1]);
+  pitCaves = Uint8Array([
+    Math.random() * Math.floor(20),
+    Math.random() * Math.floor(20)
+  ]);
+  console.log("P: " + pitCaves[0] + " " + pitCaves[1]);
+  let watchdog = 0;
+
+  do {
+    playerCave = Math.floor(Math.random() * Math.floor(20));
+    watchdog++;
+  } while (watchdog < 100 && (playerCave == wumpusCave || batCaves[0] || batCaves[1] || pitCaves[0] || pitCaves[1]));
+}
+
+
+// General Setup
+g.clear();
+Bangle.loadWidgets();
+Bangle.drawWidgets();
+
+// Game Specific
+drawCaveOutline();
 
 setWatch(() => {
   playerCave = caves[playerCave * 3];
@@ -97,5 +164,5 @@ setWatch(() => {
   drawCave();
 }, BTN3, {repeat:true});
 
-let playerCave = Math.floor(Math.random() * Math.floor(20));
+startGame();
 drawCave();
